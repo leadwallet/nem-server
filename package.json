@@ -1,0 +1,28 @@
+{
+  "name": "nem-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "express": "^4.17.1",
+    "nem-sdk": "^1.6.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=development node src/index",
+    "prod": "cross-env NODE_ENV=production node src/index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leadwallet/nem-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leadwallet/nem-server/issues"
+  },
+  "homepage": "https://github.com/leadwallet/nem-server#readme"
+}
