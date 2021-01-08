@@ -18,7 +18,7 @@ const nodes = {
 // };
 
 const network = networks[environment] || "testnet";
-const node = nodes[environment]
+const node = nodes[environment];
 const port = 7890;
 
 module.exports.generateAddress = function () {
@@ -39,5 +39,47 @@ module.exports.generateAddress = function () {
 module.exports.getAddressDetails = async function (address) {
  const endpoint = nem.model.objects.create("endpoint")(node, port);
  const account = await nem.com.requests.account.data(endpoint, address);
- return { balance: account.account.balance / 10 ** 6 };
+ return Promise.resolve({ balance: account.account.balance / 10 ** 6 });
+};
+
+module.exports.sendToken = async function (pk, to, value) {
+ const endpoint = nem.model.objects.create("endpoint")(node, port);
+ const networkId = nem.model.network.data[network].id;
+ const common = nem.model.objects.create("common")("", pk);
+ const tx = nem.model.objects.create("transferTransaction")(
+  to,
+  value * 10 ** 6,
+  "Txn from Leadwallet: " + Date.now()
+ );
+ const preparedTx = nem.model.transactions.prepare("transferTransaction")(
+  common,
+  tx,
+  networkId
+ );
+ const sentTx = await nem.model.transactions.send(common, preparedTx, endpoint);
+ return Promise.resolve({
+  hash: sentTx.transactionHash.data
+ });
+};
+
+module.exports.getTxs = async function (address) {
+ const endpoint = nem.model.objects.create("endpoint")(node, port);
+ const allTxMetadataPair = await nem.com.requests.account.allTransactions(
+  endpoint,
+  address
+ );
+ const allTxMapped = allTxMetadataPair.map((tx) => ({
+  hash: tx.meta.hash.data,
+  date: new Date(tx.transaction.timeStamp),
+  amount:
+   address.toLowerCase() === tx.transaction.recipient.toLowerCase()
+    ? "+" + tx.transaction.amount / 10 ** 6
+    : "-" + tx.transaction.amount / 10 ** 6,
+  to: tx.transaction.recipient,
+  from: address,
+  fee: tx.transaction.fee / 10 ** 6
+ }));
+ return Promise.resolve({
+  txns: allTxMapped
+ });
 };

@@ -16,7 +16,25 @@ router.get("/account/balance", async (req, res) => {
   const obj = await ops.getAddressDetails(req.query.address);
   return res.status(200).json({ ...obj });
  } catch (error) {
-  console.log(error);
+  // console.log(error);
+  return res.status(500).send(error.message);
+ }
+});
+
+router.post("/tx", async (req, res) => {
+ try {
+  const tx = await ops.sendToken(req.query.pk, req.query.to, req.body.value);
+  return res.status(200).json({ ...tx });
+ } catch (error) {
+  return res.status(500).send(error.message);
+ }
+});
+
+router.get("/txs", async (req, res) => {
+ try {
+  const txs = await ops.getTxs(req.query.address);
+  return res.status(200).json({ ...txs });
+ } catch (error) {
   return res.status(500).send(error.message);
  }
 });
