@@ -64,7 +64,11 @@ module.exports.sendToken = async function (pk, to, value) {
 
 module.exports.getTxs = async function (address) {
  const endpoint = nem.model.objects.create("endpoint")(node, port);
- const allTxMetadataPair = await nem.com.requests.account.allTransactions(
+ const allTxMetadataPair = await nem.com.requests.account.transactions.all(
+  endpoint,
+  address
+ );
+ const unconfirmedTxMetadatapair = await nem.com.requests.account.transactions.unconfirmed(
   endpoint,
   address
  );
@@ -77,9 +81,23 @@ module.exports.getTxs = async function (address) {
     : "-" + tx.transaction.amount / 10 ** 6,
   to: tx.transaction.recipient,
   from: address,
-  fee: tx.transaction.fee / 10 ** 6
+  fee: tx.transaction.fee / 10 ** 6,
+  status: "Confirmed"
  }));
+ const unconfirmedMapped = unconfirmedTxMetadatapair.map((tx) => ({
+  hash: tx.meta.data,
+  date: new Date(tx.transaction.timeStamp),
+  amount:
+   address.toLowerCase() === tx.transaction.recipient.toLowerCase()
+    ? "+" + tx.transaction.amount / 10 ** 6
+    : "-" + tx.transaction.amount / 10 ** 6,
+  to: tx.transaction.recipient,
+  from: address,
+  fee: tx.transaction.fee / 10 ** 6,
+  status: "Pending"
+ }));
+ const concatenated = [...allTxMapped].concat(unconfirmedMapped);
  return Promise.resolve({
-  txns: allTxMapped
+  txns: concatenated
  });
 };

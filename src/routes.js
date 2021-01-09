@@ -1,6 +1,13 @@
 const router = require("express").Router();
 const ops = require("./ops");
 
+router.get("/ping", (req, res) => {
+ res.status(200).json({
+  message: "UP",
+  path: req.path
+ });
+});
+
 router.get("/account/generate", async (req, res) => {
  try {
   const account = await ops.generateAddress();
