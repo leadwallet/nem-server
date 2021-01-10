@@ -68,13 +68,12 @@ module.exports.getTxs = async function (address) {
   endpoint,
   address
  );
- console.log(allTxMetadataPair);
+ // console.log(allTxMetadataPair);
  const unconfirmedTxMetadatapair = await nem.com.requests.account.transactions.unconfirmed(
   endpoint,
   address
  );
- console.log(unconfirmedTxMetadataPair);
- const allTxMapped = allTxMetadataPair.map((tx) => ({
+ const allTxMapped = allTxMetadataPair.data.map((tx) => ({
   hash: tx.meta.hash.data,
   date: new Date(tx.transaction.timeStamp),
   amount:
@@ -86,7 +85,7 @@ module.exports.getTxs = async function (address) {
   fee: tx.transaction.fee / 10 ** 6,
   status: "Confirmed"
  }));
- const unconfirmedMapped = unconfirmedTxMetadatapair.map((tx) => ({
+ const unconfirmedMapped = unconfirmedTxMetadatapair.data.map((tx) => ({
   hash: tx.meta.data,
   date: new Date(tx.transaction.timeStamp),
   amount:
