@@ -68,10 +68,12 @@ module.exports.getTxs = async function (address) {
   endpoint,
   address
  );
+ console.log(allTxMetadataPair);
  const unconfirmedTxMetadatapair = await nem.com.requests.account.transactions.unconfirmed(
   endpoint,
   address
  );
+ console.log(unconfirmedTxMetadataPair);
  const allTxMapped = allTxMetadataPair.map((tx) => ({
   hash: tx.meta.hash.data,
   date: new Date(tx.transaction.timeStamp),
