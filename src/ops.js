@@ -64,12 +64,13 @@ module.exports.sendToken = async function (pk, to, value) {
 
 module.exports.getTxs = async function (address) {
  const endpoint = nem.model.objects.create("endpoint")(node, port);
+ const networkId = nem.model.network.data[network].id;
  const allTxMetadataPair = await nem.com.requests.account.transactions.all(
   endpoint,
   address
  );
 
- console.log(JSON.stringify(allTxMetadataPair.data));
+ // console.log(JSON.stringify(allTxMetadataPair.data));
  // console.log(allTxMetadataPair);
  const unconfirmedTxMetadatapair = await nem.com.requests.account.transactions.unconfirmed(
   endpoint,
@@ -83,7 +84,7 @@ module.exports.getTxs = async function (address) {
     ? "+" + tx.transaction.amount / 10 ** 6
     : "-" + tx.transaction.amount / 10 ** 6,
   to: tx.transaction.recipient,
-  from: address,
+  from: nem.model.address.toAddress(tx.transaction.signer, networkId),
   fee: tx.transaction.fee / 10 ** 6,
   status: "Confirmed"
  }));
@@ -96,7 +97,7 @@ module.exports.getTxs = async function (address) {
     ? "+" + tx.transaction.amount / 10 ** 6
     : "-" + tx.transaction.amount / 10 ** 6,
   to: tx.transaction.recipient,
-  from: address,
+  from: nem.model.address.toAddress(tx.transaction.signer, networkId),
   fee: tx.transaction.fee / 10 ** 6,
   status: "Pending"
  }));
