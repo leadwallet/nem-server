@@ -85,6 +85,7 @@ module.exports.getTxs = async function (address) {
   fee: tx.transaction.fee / 10 ** 6,
   status: "Confirmed"
  }));
+ console.log(JSON.stringify(allTxMapped));
  const unconfirmedMapped = unconfirmedTxMetadatapair.data.map((tx) => ({
   hash: tx.meta.data,
   date: new Date(tx.transaction.timeStamp),
